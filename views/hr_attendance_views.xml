@@ -1,30 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Extended Attendance Tree View -->
-    <record id="view_attendance_tree_extended" model="ir.ui.view">
-        <field name="name">hr.attendance.tree.extended</field>
+    <!-- Add late arrival fields to attendance list view -->
+    <record id="view_attendance_tree_late" model="ir.ui.view">
+        <field name="name">hr.attendance.tree.late</field>
         <field name="model">hr.attendance</field>
         <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
         <field name="arch" type="xml">
             <field name="check_out" position="after">
-                <field name="is_late"/>
-                <field name="late_minutes" attrs="{'invisible': [('is_late', '=', False)]}"/>
+                <field name="is_late" string="Late"/>
+                <field name="late_minutes" string="Min Late" optional="show"/>
             </field>
         </field>
     </record>
 
-    <!-- Extended Attendance Form View -->
-    <record id="view_attendance_form_extended" model="ir.ui.view">
-        <field name="name">hr.attendance.form.extended</field>
+    <!-- Add late arrival fields to attendance form view -->
+    <record id="view_attendance_form_late" model="ir.ui.view">
+        <field name="name">hr.attendance.form.late</field>
         <field name="model">hr.attendance</field>
         <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
         <field name="arch" type="xml">
             <field name="check_out" position="after">
-                <field name="is_late"/>
-                <field name="late_minutes" attrs="{'invisible': [('is_late', '=', False)]}"/>
-                <field name="late_reason" attrs="{'invisible': [('is_late', '=', False)]}"/>
-                <field name="manager_approved" attrs="{'invisible': [('is_late', '=', False)]}"/>
+                <group string="Late Arrival Info">
+                    <field name="is_late"/>
+                    <field name="late_minutes"/>
+                    <field name="expected_check_in"/>
+                    <field name="late_reason"/>
+                    <field name="manager_approved"/>
+                </group>
+                <div class="mt-3">
+                    <button name="manual_recompute_late"
+                            string="Recompute Late Status"
+                            type="object"
+                            class="btn-secondary"
+                            groups="hr.group_hr_manager"/>
+                </div>
             </field>
+        </field>
+    </record>
+
+    <!-- Add search filters for late arrivals -->
+    <record id="view_attendance_search_late" model="ir.ui.view">
+        <field name="name">hr.attendance.search.late</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="Late Arrivals" name="late_only"
+                        domain="[('is_late', '=', True)]"/>
+                <filter string="Today" name="today"
+                        domain="[('check_in', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00'))]"/>
+            </xpath>
         </field>
     </record>
 </odoo>

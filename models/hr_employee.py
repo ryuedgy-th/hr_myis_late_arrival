@@ -4,6 +4,16 @@ from datetime import date, timedelta
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
+    # Employee Type for different grace periods
+    employee_type = fields.Selection([
+        ('teacher', 'Teacher'),
+        ('nanny', 'Teaching Assistant / Nanny'),
+        ('operation', 'Operation Support'),
+        ('admin', 'Administrative Staff'),
+        ('management', 'Management')
+    ], string='Employee Type', default='teacher',
+       help="Employee type affects grace period for late arrival detection")
+
     # Late arrival statistics
     late_arrival_count_today = fields.Integer(
         string='Late Today',
@@ -27,16 +37,40 @@ class HrEmployee(models.Model):
         help="Score based on punctuality (100 = perfect, 0 = very poor)"
     )
 
-    # Configuration fields
-    custom_grace_period = fields.Integer(
-        string='Custom Grace Period (minutes)',
-        help="Override company default grace period for this employee"
+    # Working schedule display
+    working_schedule_display = fields.Char(
+        string='Working Schedule',
+        compute='_compute_working_schedule_display'
     )
-    attendance_notification = fields.Boolean(
-        string='Send Late Notifications',
-        default=True,
-        help="Send email notifications when employee is late"
-    )
+
+    @api.depends('resource_calendar_id', 'resource_calendar_id.attendance_ids')
+    def _compute_working_schedule_display(self):
+        """Display working schedule in a readable format"""
+        for employee in self:
+            if not employee.resource_calendar_id:
+                employee.working_schedule_display = "No schedule defined"
+                continue
+
+            calendar = employee.resource_calendar_id
+            schedule_lines = []
+
+            # Group by day
+            days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+            for day_idx, day_name in enumerate(days):
+                day_attendances = calendar.attendance_ids.filtered(
+                    lambda x: int(x.dayofweek) == day_idx
+                ).sorted('hour_from')
+
+                if day_attendances:
+                    time_ranges = []
+                    for att in day_attendances:
+                        start_time = f"{int(att.hour_from):02d}:{int((att.hour_from % 1) * 60):02d}"
+                        end_time = f"{int(att.hour_to):02d}:{int((att.hour_to % 1) * 60):02d}"
+                        time_ranges.append(f"{start_time}-{end_time}")
+
+                    schedule_lines.append(f"{day_name}: {', '.join(time_ranges)}")
+
+            employee.working_schedule_display = '; '.join(schedule_lines) if schedule_lines else "No working hours defined"
 
     @api.depends('attendance_ids', 'attendance_ids.is_late', 'attendance_ids.check_in')
     def _compute_late_statistics(self):
@@ -99,7 +133,7 @@ class HrEmployee(models.Model):
             'name': _('Late Arrivals - %s') % self.name,
             'type': 'ir.actions.act_window',
             'res_model': 'hr.attendance',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [
                 ('employee_id', '=', self.id),
                 ('is_late', '=', True)
@@ -107,9 +141,37 @@ class HrEmployee(models.Model):
             'context': {'default_employee_id': self.id},
         }
 
-    def get_effective_grace_period(self):
-        """Get effective grace period (custom or company default)"""
+    def get_grace_period_for_type(self):
+        """Get grace period based on employee type"""
+        grace_periods = {
+            'teacher': 10,          # Teachers: 10 minutes grace
+            'nanny': 10,            # Teaching assistants: 15 minutes
+            'operation': 10,        # Operations: 20 minutes
+            'admin': 10,            # Admin: 15 minutes
+            'management': 10        # Management: 30 minutes
+        }
+        return grace_periods.get(self.employee_type, 15)
+
+    def get_working_hours_for_date(self, target_date):
+        """Get working hours for a specific date"""
         self.ensure_one()
-        if self.custom_grace_period:
-            return self.custom_grace_period
-        return self.company_id.attendance_grace_period or 15
+        if not self.resource_calendar_id:
+            return []
+
+        weekday = target_date.weekday()
+        working_hours = self.resource_calendar_id.attendance_ids.filtered(
+            lambda x: int(x.dayofweek) == weekday
+        ).sorted('hour_from')
+
+        schedule_info = []
+        for wh in working_hours:
+            start_time = f"{int(wh.hour_from):02d}:{int((wh.hour_from % 1) * 60):02d}"
+            end_time = f"{int(wh.hour_to):02d}:{int((wh.hour_to % 1) * 60):02d}"
+            schedule_info.append({
+                'start': start_time,
+                'end': end_time,
+                'hour_from': wh.hour_from,
+                'hour_to': wh.hour_to
+            })
+
+        return schedule_info

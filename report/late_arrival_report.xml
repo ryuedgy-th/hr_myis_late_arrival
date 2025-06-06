@@ -21,7 +21,7 @@
 
                         <div class="row">
                             <div class="col-12">
-                                <h2>Late Arrival Report</h2>
+                                <h2>Late Arrival Report - MYIS International School</h2>
                                 <p>Generated on: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/></p>
                             </div>
                         </div>
@@ -49,5 +49,74 @@
                                                 <td><span t-field="attendance.employee_id.department_id.name"/></td>
                                                 <td><span t-field="attendance.check_in" t-options="{'widget': 'date'}"/></td>
                                                 <td><span t-field="attendance.expected_check_in" t-options="{'widget': 'time'}"/></td>
-                                                <td><span t-field="# ==== 15. wizard/__init__.py ====
-from . import late_arrival_wizard
+                                                <td><span t-field="attendance.check_in" t-options="{'widget': 'time'}"/></td>
+                                                <td class="text-right">
+                                                    <span t-field="attendance.late_minutes"/>
+                                                </td>
+                                                <td>
+                                                    <span t-if="attendance.late_category == 'minor'" class="badge badge-warning">Minor</span>
+                                                    <span t-if="attendance.late_category == 'moderate'" class="badge badge-warning">Moderate</span>
+                                                    <span t-if="attendance.late_category == 'major'" class="badge badge-danger">Major</span>
+                                                    <span t-if="attendance.late_category == 'severe'" class="badge badge-danger">Severe</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span t-if="attendance.manager_approved"
+                                                          class="badge badge-success">✓ Approved</span>
+                                                    <span t-else="" class="badge badge-warning">Pending</span>
+                                                </td>
+                                                <td><span t-field="attendance.late_reason"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Summary Statistics -->
+                        <div class="row mt32">
+                            <div class="col-12">
+                                <h3>Summary Statistics</h3>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h4 t-esc="len(docs.filtered(lambda x: x.is_late))"/>
+                                                <p>Total Late Arrivals</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h4 t-esc="sum(docs.filtered(lambda x: x.is_late).mapped('late_minutes'))"/>
+                                                <p>Total Late Minutes</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h4 t-esc="len(docs.filtered(lambda x: x.is_late and x.manager_approved))"/>
+                                                <p>Approved</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h4 t-esc="len(docs.filtered(lambda x: x.is_late and not x.manager_approved))"/>
+                                                <p>Pending Approval</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

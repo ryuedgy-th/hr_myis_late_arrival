@@ -6,32 +6,23 @@
        <field name="model">hr.employee</field>
        <field name="inherit_id" ref="hr.hr_employee_view_form"/>
        <field name="arch" type="xml">
-           <!-- Add attendance statistics to employee form -->
-           <xpath expr="//div[@name='button_box']" position="inside">
-               <button name="action_view_late_arrivals" type="object"
-                       class="oe_stat_button" icon="fa-clock-o">
-                   <field name="late_arrival_count_month" widget="statinfo"
-                          string="Late This Month"/>
-               </button>
-               <button name="action_view_late_arrivals" type="object"
-                       class="oe_stat_button" icon="fa-star">
-                   <field name="attendance_score" widget="percentpie"
-                          string="Attendance Score"/>
-               </button>
-           </xpath>
+           <!-- Add employee type field -->
+           <field name="job_title" position="after">
+               <field name="employee_type"/>
+           </field>
 
-           <!-- Add late arrival settings -->
+           <!-- Add late arrival statistics -->
            <xpath expr="//page[@name='hr_settings']" position="inside">
-               <group string="Attendance Settings" name="attendance_settings">
-                   <field name="custom_grace_period"/>
-                   <field name="attendance_notification"/>
+               <group string="Late Arrival Settings" name="late_settings">
+                   <field name="employee_type"/>
+                   <field name="working_schedule_display" readonly="1"/>
                </group>
 
                <group string="Late Arrival Statistics" name="late_stats">
                    <field name="late_arrival_count_today"/>
                    <field name="late_arrival_count_week"/>
                    <field name="late_arrival_count_month"/>
-                   <field name="total_late_minutes_month"/>
+                   <field name="attendance_score"/>
                </group>
            </xpath>
        </field>
@@ -44,32 +35,11 @@
        <field name="inherit_id" ref="hr.hr_employee_view_tree"/>
        <field name="arch" type="xml">
            <xpath expr="//field[@name='department_id']" position="after">
-               <field name="late_arrival_count_month" string="Late (Month)"/>
-               <field name="attendance_score" widget="progressbar" string="Score"/>
+               <field name="employee_type" optional="hide"/>
+               <field name="late_arrival_count_month" string="Late (Month)" optional="hide"/>
+               <field name="attendance_score" string="Score" optional="hide"/>
            </xpath>
        </field>
-   </record>
-
-   <!-- Department Analysis Action -->
-   <record id="action_late_arrivals_department_summary" model="ir.actions.act_window">
-       <field name="name">Late Arrivals - Department Summary</field>
-       <field name="res_model">hr.employee</field>
-       <field name="view_mode">tree,kanban,pivot,graph</field>
-       <field name="context">{
-           'search_default_group_by_department': 1,
-           'search_default_has_late_arrivals': 1
-       }</field>
-       <field name="domain">[]</field>
-   </record>
-
-   <!-- Employee Analysis Action -->
-   <record id="action_late_arrivals_employee_analysis" model="ir.actions.act_window">
-       <field name="name">Late Arrivals - Employee Analysis</field>
-       <field name="res_model">hr.employee</field>
-       <field name="view_mode">tree,kanban,graph,pivot</field>
-       <field name="context">{
-           'search_default_has_late_arrivals': 1
-       }</field>
    </record>
 
    <!-- Employee Search View for Late Arrival Analysis -->
@@ -82,39 +52,23 @@
                <separator/>
                <filter string="Has Late Arrivals This Month" name="has_late_arrivals"
                        domain="[('late_arrival_count_month', '>', 0)]"/>
-               <filter string="Poor Attendance Score" name="poor_score"
-                       domain="[('attendance_score', '&lt;', 80)]"/>
-               <filter string="Frequent Late Arrivals" name="frequent_late"
-                       domain="[('late_arrival_count_month', '>', 5)]"/>
-           </xpath>
-       </field>
-   </record>
-
-   <!-- Employee Kanban View with Attendance Info -->
-   <record id="hr_employee_kanban_late" model="ir.ui.view">
-       <field name="name">hr.employee.kanban.late</field>
-       <field name="model">hr.employee</field>
-       <field name="inherit_id" ref="hr.hr_employee_view_kanban"/>
-       <field name="arch" type="xml">
-           <xpath expr="//div[@class='oe_kanban_details']" position="inside">
-               <div class="o_kanban_record_bottom">
-                   <div class="oe_kanban_bottom_left">
-                       <span class="badge badge-info" t-if="record.late_arrival_count_month.raw_value">
-                           Late: <field name="late_arrival_count_month"/>
-                       </span>
-                   </div>
-                   <div class="oe_kanban_bottom_right">
-                       <span class="badge badge-success" t-if="record.attendance_score.raw_value >= 90">
-                           Score: <field name="attendance_score"/>%
-                       </span>
-                       <span class="badge badge-warning" t-if="record.attendance_score.raw_value >= 70 and record.attendance_score.raw_value &lt; 90">
-                           Score: <field name="attendance_score"/>%
-                       </span>
-                       <span class="badge badge-danger" t-if="record.attendance_score.raw_value &lt; 70">
-                           Score: <field name="attendance_score"/>%
-                       </span>
-                   </div>
-               </div>
+               <filter string="Teachers" name="teachers"
+                       domain="[('employee_type', '=', 'teacher')]"/>
+               <filter string="Teaching Assistants" name="nannies"
+                       domain="[('employee_type', '=', 'nanny')]"/>
+               <filter string="Operations" name="operations"
+                       domain="[('employee_type', '=', 'operation')]"/>
+               <filter string="Admin Staff" name="admin"
+                       domain="[('employee_type', '=', 'admin')]"/>
+               <filter string="Management" name="management"
+                       domain="[('employee_type', '=', 'management')]"/>
+               <separator/>
+               <group expand="0" string="Group By">
+                   <filter string="Employee Type" name="group_by_employee_type"
+                           context="{'group_by': 'employee_type'}"/>
+                   <filter string="Department" name="group_by_department"
+                           context="{'group_by': 'department_id'}"/>
+               </group>
            </xpath>
        </field>
    </record>

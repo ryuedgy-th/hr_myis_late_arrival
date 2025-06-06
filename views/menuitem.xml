@@ -46,10 +46,19 @@
         action="action_late_arrivals_all"
         sequence="40"/>
 
+    <!-- Approval Queue -->
+    <menuitem
+        id="menu_late_arrivals_approval"
+        name="Pending Approvals"
+        parent="menu_late_arrivals_root"
+        action="action_late_arrivals_pending_approval"
+        sequence="45"
+        groups="hr.group_hr_manager"/>
+
     <!-- Reporting -->
     <menuitem
         id="menu_late_arrivals_reports"
-        name="Reports & Analysis"
+        name="Reports"
         parent="menu_late_arrivals_root"
         sequence="50"/>
 
@@ -66,22 +75,4 @@
         parent="menu_late_arrivals_reports"
         action="action_late_arrivals_employee_analysis"
         sequence="20"/>
-
-    <!-- Approval Queue -->
-    <menuitem
-        id="menu_late_arrivals_approval"
-        name="Pending Approvals"
-        parent="menu_late_arrivals_root"
-        action="action_late_arrivals_pending_approval"
-        sequence="45"
-        groups="hr.group_hr_manager"/>
-
-    <!-- Configuration -->
-    <menuitem
-        id="menu_late_arrivals_config"
-        name="Configuration"
-        parent="hr_attendance.menu_hr_attendance_configuration"
-        action="action_late_arrival_settings"
-        sequence="50"
-        groups="hr.group_hr_manager"/>
 </odoo>

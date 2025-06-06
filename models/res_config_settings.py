@@ -28,8 +28,4 @@ class ResCompany(models.Model):
         string='Attendance Grace Period',
         default=15,
         help="Default grace period in minutes before marking as late"
-    )# =====================================
-# Custom Module: Late Arrival Management
-# สำหรับ MYIS International School
-# อ้างอิงจาก Odoo 18 official structure
-# =====================================
+    )
