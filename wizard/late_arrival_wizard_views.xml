@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Late Arrival Report Wizard Form -->
+    <record id="view_late_arrival_report_wizard" model="ir.ui.view">
+        <field name="name">late.arrival.report.wizard.form</field>
+        <field name="model">late.arrival.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Late Arrival Report">
+                <group>
+                    <group string="Date Range">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group string="Filters">
+                        <field name="department_ids" widget="many2many_tags"/>
+                        <field name="employee_ids" widget="many2many_tags"/>
+                        <field name="min_late_minutes"/>
+                        <field name="include_approved"/>
+                    </group>
+                </group>
+                <group string="Report Options">
+                    <field name="report_type"/>
+                </group>
+                <footer>
+                    <button name="action_generate_report" string="Generate Report"
+                            type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Bulk Approval Wizard Form -->
+    <record id="view_late_arrival_bulk_approval_wizard" model="ir.ui.view">
+        <field name="name">late.arrival.bulk.approval.wizard.form</field>
+        <field name="model">late.arrival.bulk.approval.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Bulk Approve Late Arrivals">
+                <group>
+                    <field name="attendance_ids" nolabel="1">
+                        <tree string="Late Arrivals to Approve">
+                            <field name="employee_id"/>
+                            <field name="check_in"/>
+                            <field name="late_minutes"/>
+                            <field name="late_reason"/>
+                        </tree>
+                    </field>
+                </group>
+                <group string="Approval Details">
+                    <field name="approval_reason" placeholder="Optional reason for bulk approval..."/>
+                </group>
+                <footer>
+                    <button name="action_bulk_approve" string="Approve All"
+                            type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Report Wizard Action -->
+    <record id="action_late_arrival_report_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Late Arrival Report</field>
+        <field name="res_model">late.arrival.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Bulk Approval Wizard Action -->
+    <record id="action_late_arrival_bulk_approval_wizard" model="ir.actions.act_window">
+        <field name="name">Bulk Approve Late Arrivals</field>
+        <field name="res_model">late.arrival.bulk.approval.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{
+            'default_attendance_ids': [(6, 0, context.get('active_ids', []))]
+        }</field>
+    </record>
+
+    <!-- Add to Reports Menu -->
+    <menuitem
+        id="menu_late_arrival_report_wizard"
+        name="Generate Custom Report"
+        parent="menu_late_arrivals_reports"
+        action="action_late_arrival_report_wizard"
+        sequence="30"/>
+</odoo>

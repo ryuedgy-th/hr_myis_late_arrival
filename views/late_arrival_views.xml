@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Late Arrival Tree View -->
+    <record id="view_late_arrival_tree" model="ir.ui.view">
+        <field name="name">myis.late.arrival.tree</field>
+        <field name="model">myis.late.arrival</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="late_minutes >= 30"
+                  decoration-warning="late_minutes >= 15 and late_minutes &lt; 30"
+                  decoration-info="manager_approved == True">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="date"/>
+                <field name="check_in_time"/>
+                <field name="late_minutes" string="Late (min)"/>
+                <field name="manager_approved"/>
+                <field name="payroll_deducted"/>
+                <field name="reason"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Late Arrival Form View -->
+    <record id="view_late_arrival_form" model="ir.ui.view">
+        <field name="name">myis.late.arrival.form</field>
+        <field name="model">myis.late.arrival</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_approve" type="object"
+                            string="Approve" class="oe_highlight"
+                            attrs="{'invisible': [('manager_approved', '=', True)]}"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="check_in_time"/>
+                            <field name="scheduled_time"/>
+                            <field name="late_minutes"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reason" placeholder="Enter reason for late arrival..."/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="manager_approved"/>
+                            <field name="payroll_deducted"/>
+                        </group>
+                        <group>
+                            <field name="attendance_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <!-- Today's Late Arrivals -->
+    <record id="action_late_arrival_today" model="ir.actions.act_window">
+        <field name="name">Late Arrivals - Today</field>
+        <field name="res_model">hr.attendance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('is_late', '=', True),
+            ('check_in', '>=', context_today().strftime('%Y-%m-%d 00:00:00')),
+            ('check_in', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))
+        ]</field>
+        <field name="context">{
+            'search_default_group_by_department': 1,
+            'create': False
+        }</field>
+    </record>
+
+    <!-- This Week's Late Arrivals -->
+    <record id="action_late_arrival_week" model="ir.actions.act_window">
+        <field name="name">Late Arrivals - This Week</field>
+        <field name="res_model">hr.attendance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('is_late', '=', True),
+            ('check_in', '>=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d 00:00:00')),
+            ('check_in', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))
+        ]</field>
+    </record>
+
+    <!-- This Month's Late Arrivals -->
+    <record id="action_late_arrival_month" model="ir.actions.act_window">
+        <field name="name">Late Arrivals - This Month</field>
+        <field name="res_model">hr.attendance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('is_late', '=', True),
+            ('check_in', '>=', context_today().replace(day=1).strftime('%Y-%m-%d 00:00:00')),
+            ('check_in', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))
+        ]</field>
+    </record>
+
+    <!-- All Late Arrivals -->
+    <record id="action_late_arrival_all" model="ir.actions.act_window">
+        <field name="name">All Late Arrivals</field>
+        <field name="res_model">hr.attendance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_late', '=', True)]</field>
+    </record>
+
+    <!-- Late Arrival Summary -->
+    <record id="action_late_arrival_summary" model="ir.actions.act_window">
+        <field name="name">Late Arrival Summary</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{
+            'search_default_group_by_department': 1
+        }</field>
+    </record>
+</odoo>

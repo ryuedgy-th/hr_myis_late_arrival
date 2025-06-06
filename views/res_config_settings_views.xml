@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_late" model="ir.ui.view">
+        <field name="name">res.config.settings.form.late</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-key='hr']" position="inside">
+                <h2>Late Arrival Management</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="attendance_grace_period"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="attendance_grace_period"/>
+                            <div class="text-muted">
+                                Default grace period before marking attendance as late
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="auto_create_late_records"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="auto_create_late_records"/>
+                            <div class="text-muted">
+                                Automatically create late arrival records for tracking
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="late_notification_template"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="late_notification_template"/>
+                            <div class="text-muted">
+                                Email template for late arrival notifications
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Configuration Action -->
+    <record id="action_late_arrival_settings" model="ir.actions.act_window">
+        <field name="name">Late Arrival Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'myis_late_arrival'}</field>
+    </record>
+</odoo>

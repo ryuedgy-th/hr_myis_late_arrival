@@ -1,0 +1,77 @@
+/* Late Arrival Module Styles */
+
+.o_late_arrival_dashboard {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.o_late_arrival_stat_card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin: 10px;
+}
+
+.o_late_arrival_stat_number {
+    font-size: 2.5em;
+    font-weight: bold;
+    display: block;
+}
+
+.o_late_arrival_stat_label {
+    font-size: 0.9em;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+/* Badge styles for late categories */
+.badge-late-minor {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-late-moderate {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.badge-late-major {
+    background-color: #dc3545;
+    color: white;
+}
+
+.badge-late-severe {
+    background-color: #6f42c1;
+    color: white;
+}
+
+/* Attendance score indicators */
+.attendance-score-excellent {
+    color: #28a745;
+}
+
+.attendance-score-good {
+    color: #17a2b8;
+}
+
+.attendance-score-fair {
+    color: #ffc107;
+}
+
+.attendance-score-poor {
+    color: #dc3545;
+}
+
+/* Kanban view enhancements */
+.o_kanban_view .o_late_arrival_card {
+    border-left: 4px solid #dc3545;
+}
+
+.o_kanban_view .o_late_arrival_card.approved {
+    border-left-color: #28a745;
+}

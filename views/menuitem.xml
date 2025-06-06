@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Late Arrivals Main Menu -->
+    <menuitem
+        id="menu_late_arrivals_root"
+        name="Late Arrivals"
+        parent="hr_attendance.menu_hr_attendance_root"
+        sequence="60"
+        groups="hr.group_hr_user"/>
+
+    <!-- Daily Views -->
+    <menuitem
+        id="menu_late_arrivals_today"
+        name="Today"
+        parent="menu_late_arrivals_root"
+        action="action_late_arrivals_today"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_late_arrivals_yesterday"
+        name="Yesterday"
+        parent="menu_late_arrivals_root"
+        action="action_late_arrivals_yesterday"
+        sequence="15"/>
+
+    <!-- Period Views -->
+    <menuitem
+        id="menu_late_arrivals_week"
+        name="This Week"
+        parent="menu_late_arrivals_root"
+        action="action_late_arrivals_week"
+        sequence="20"/>
+
+    <menuitem
+        id="menu_late_arrivals_month"
+        name="This Month"
+        parent="menu_late_arrivals_root"
+        action="action_late_arrivals_month"
+        sequence="30"/>
+
+    <!-- All Records -->
+    <menuitem
+        id="menu_late_arrivals_all"
+        name="All Late Arrivals"
+        parent="menu_late_arrivals_root"
+        action="action_late_arrivals_all"
+        sequence="40"/>
+
+    <!-- Reporting -->
+    <menuitem
+        id="menu_late_arrivals_reports"
+        name="Reports & Analysis"
+        parent="menu_late_arrivals_root"
+        sequence="50"/>
+
+    <menuitem
+        id="menu_late_arrivals_summary"
+        name="Department Summary"
+        parent="menu_late_arrivals_reports"
+        action="action_late_arrivals_department_summary"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_late_arrivals_employee_analysis"
+        name="Employee Analysis"
+        parent="menu_late_arrivals_reports"
+        action="action_late_arrivals_employee_analysis"
+        sequence="20"/>
+
+    <!-- Approval Queue -->
+    <menuitem
+        id="menu_late_arrivals_approval"
+        name="Pending Approvals"
+        parent="menu_late_arrivals_root"
+        action="action_late_arrivals_pending_approval"
+        sequence="45"
+        groups="hr.group_hr_manager"/>
+
+    <!-- Configuration -->
+    <menuitem
+        id="menu_late_arrivals_config"
+        name="Configuration"
+        parent="hr_attendance.menu_hr_attendance_configuration"
+        action="action_late_arrival_settings"
+        sequence="50"
+        groups="hr.group_hr_manager"/>
+</odoo>
